@@ -4,6 +4,15 @@
 
 - Match DSH floating-panel chrome by replacing the separate six-dot move button with a focusable, draggable title bar. Keep arrow-key movement and Home reset, place reset and close actions in the header, and align status text with the search field.
 
+## 0.2.0
+
+Maintained fork release: adapt to DeepSeek Harness `0.2.1-rc.2`.
+
+- Declare `engines.dsh` (`^0.2.1-rc.2`) so the plugin manager stops reporting the plugin as incompatible with the current host.
+- Stop requiring `projectUserText` from the host primitives bundle. DSH 0.2.1 removed it, and the missing symbol made `createProjector` throw, silently downgrading conversation-body search to the loaded-only mode. Authored user markdown now projects through the same public `MarkdownText` renderer the assistant body uses.
+- Keep `react-dom/server.browser` bundled by the build (`esbuild`), so static projection no longer depends on a host seed module.
+- Point package metadata at the maintained repository.
+
 ## 0.1.12
 
 - Add opt-in archived conversation search with explicit Unarchive and open actions, current-state verification, and cancelled navigation when the search changes.

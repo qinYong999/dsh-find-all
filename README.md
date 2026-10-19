@@ -2,6 +2,8 @@
 
 DeepSeek Harness（DSH）的对话查找插件。搜索各工作区对话的标题和已保存正文，也可按 **⌘F / Ctrl+F** 查找当前对话。
 
+> **维护版说明**：本仓库是 [Ryuu-64/dsh-find-all](https://github.com/Ryuu-64/dsh-find-all) 的社区维护分支（原项目 MIT，已停止更新）。上游 0.1.12 在 DSH `0.2.1-rc.2` 上被插件管理器判定为「与当前 dsh 不兼容」，且正文投影依赖的 `projectUserText` 已从宿主公开接口移除，导致投影功能降级为「仅已加载内容」。0.2.0 起在本分支适配：补上 `engines.dsh` 声明、改用宿主公开的 Markdown 渲染器投影用户消息、`react-dom/server` 由构建产物自带，搜索行为不变。适配细节见[兼容说明](docs/compatibility.md)。
+
 ## 效果预览
 
 记得聊过「离线导出」，却忘了在哪个对话？输入关键词，从正文片段中找回它。
@@ -10,9 +12,20 @@ DeepSeek Harness（DSH）的对话查找插件。搜索各工作区对话的标�
 
 ## 安装
 
-1. 打开 DSH 的「插件」→「添加插件」。
-2. 输入 `@ryuu-64/dsh-find-all`，安装并启用。
-3. 重启 DSH（网页版需重启服务并刷新页面）。
+> 本维护版尚未发布到 npm；`@ryuu-64/dsh-find-all` 在 npm 上仍是**不兼容的上游 0.1.12**，直接按包名安装会装到旧版。
+
+从本仓库安装（需要 Node.js ≥ 18）：
+
+```bash
+git clone https://github.com/qinYong999/dsh-find-all.git
+cd dsh-find-all
+npm install
+node scripts/build-client.mjs          # 生成 lib/client.js
+npm pack                               # 得到 ryuu-64-dsh-find-all-0.2.0.tgz
+node scripts/install-local.mjs         # 装进 DSH 桌面 profile，带备份与回滚
+```
+
+装好后重启 DSH（网页版需重启服务并刷新页面）。手动安装时也可把 `lib/`、`cordis.patch.yml`、`package.json` 覆盖到 `~/.dsh/profiles/<profile>/node_modules/@ryuu-64/dsh-find-all/`。
 
 如果装过 `dsh-find-bar`，请先卸载，避免快捷键冲突。支持的宿主与功能范围见[兼容说明](docs/compatibility.md)。
 

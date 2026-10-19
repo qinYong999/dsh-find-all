@@ -2,6 +2,16 @@
 
 The Full-text conversation search entry targets public DSH `0.2.0-rc.2` at [`639ed015`](https://github.com/deepseek-ai/deepseek-harness/tree/639ed015397290b3745d163aafe02ffee4aa3f84). This is the implementation target, not a new claim that every historical peer version or Electron Desktop has passed acceptance. Package version and peer ranges remain unchanged.
 
+## Maintained fork: DSH 0.2.1-rc.2 adaptation (0.2.0)
+
+This repository is a maintained fork of `Ryuu-64/dsh-find-all`. Release `0.2.0` adapts the plugin to the installed DSH `0.2.1-rc.2` runtime. Three host facts drive the change, and none of them alter the search contract described below.
+
+1. **The plugin manager rejected the artifact.** The manifest declared no `engines.dsh`, so compatibility fell through to the `@deepseek-ai/dsh-*` peer ranges, whose upper bound was `0.2.0-rc.2`. A declared `engines.dsh` range takes exclusive precedence over peers in the host's requirement check, so `0.2.0` declares `"engines": { "dsh": "^0.2.1-rc.2" }` and the peer ranges track that line. With no `engines.dsh`, a host newer than the last listed peer release reports `incompatible` even when the executable API is unchanged.
+2. **`projectUserText` is gone from the public primitives bundle.** `createProjector` used to require it and threw `Host text projection unavailable` when absent. That throw was caught at install time, silently downgrading body search to the loaded-only mode, which is why plain Ctrl+F still worked while cross-conversation body snippets degraded. Authored user markdown now projects through the same public `MarkdownText` renderer the assistant body already uses, so quoted paths, skill names and emphasis render as settled text. No private controller, DOM scraping or replacement renderer was added.
+3. **`react-dom/server.browser` is no longer a host seed specifier.** It never had to be: `scripts/build-client.mjs` bundles `react-dom/server.browser` into `lib/client.js` (`esbuild`, production, `React` still external). Static projection continues to render into an inert `template.content` with no mounted roots, effects, images or network access.
+
+Verification for this fork uses the same commands as upstream: `npm run build`, `npm run check:build`, `npm run check:registration` and `npm test`. The `current-selection` suite has pre-existing failures on this checkout (`17` of `119` cases, identical before and after the fork changes) that stem from the jsdom `27.4.0` DOM/Range behavior of the harness rather than from the 0.2.1 adaptation; they are unrelated to projection and are not waived as passed here.
+
 ## Host and client contract
 
 The same package now contains an optional Host half. A Cordis child scope acquires `connection`, `sessionQuery`, and `workspaceRegistry`; the authenticated `connection.fetch` registry owns POST `/api/dsh-find-all/search`. The browser addresses `api/dsh-find-all/search` relative to the document, preserving reverse-proxy mount paths. There is no new listener, direct database/log reader, provider replacement, or external upload. Missing services leave current-conversation find installed and make cross-conversation search explicitly unavailable.
