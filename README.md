@@ -25,7 +25,11 @@ npm pack                               # 得到 ryuu-64-dsh-find-all-0.2.0.tgz
 node scripts/install-local.mjs         # 装进 DSH 桌面 profile，带备份与回滚
 ```
 
-装好后重启 DSH（网页版需重启服务并刷新页面）。手动安装时也可把 `lib/`、`cordis.patch.yml`、`package.json` 覆盖到 `~/.dsh/profiles/<profile>/node_modules/@ryuu-64/dsh-find-all/`。
+装好后**必须完全退出 DSH（托盘图标 → 退出）再重新启动**。插件包是在进程启动时读进模块表的，装完立刻刷新页面（`Ctrl+R`）或点插件管理器的「立即重启」都不会重新装载它，界面上仍会显示「已关闭」。
+
+确认生效：插件页里本插件显示 `0.2.0` 且为「启用中」，在任意对话里按 `Ctrl+F` / `⌘F` 能弹出查找条。
+
+手动安装时也可把 `lib/`、`cordis.patch.yml`、`package.json` 覆盖到 `~/.dsh/profiles/<profile>/node_modules/@ryuu-64/dsh-find-all/`。
 
 如果装过 `dsh-find-bar`，请先卸载，避免快捷键冲突。支持的宿主与功能范围见[兼容说明](docs/compatibility.md)。
 

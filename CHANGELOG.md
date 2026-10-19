@@ -12,6 +12,7 @@ Maintained fork release: adapt to DeepSeek Harness `0.2.1-rc.2`.
 - Stop requiring `projectUserText` from the host primitives bundle. DSH 0.2.1 removed it, and the missing symbol made `createProjector` throw, silently downgrading conversation-body search to the loaded-only mode. Authored user markdown now projects through the same public `MarkdownText` renderer the assistant body uses.
 - Keep `react-dom/server.browser` bundled by the build (`esbuild`), so static projection no longer depends on a host seed module.
 - Point package metadata at the maintained repository.
+- Document that the desktop app must be fully restarted after installing or upgrading: the plugin bundle is read into the host module table at process start, so a page refresh (`Ctrl+R`) or the plugin manager's "立即重启" leaves the plugin inactive.
 
 ## 0.1.12
 
