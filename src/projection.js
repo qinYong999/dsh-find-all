@@ -79,8 +79,10 @@ function semanticSubstring(block,text){
   return segments.length?{text,segments}:null;
 }
 export function createProjector(ui, react, document) {
-  if(!ui.MarkdownText||typeof ui.projectUserText!=='function'||!/^18\./u.test(react.version||''))throw Error('Host text projection unavailable');
-  // Lazy initialization keeps legacy loaded-only mode usable with older hosts.
+  if(!ui.MarkdownText||!/^18\./u.test(react.version||''))throw Error('Host text projection unavailable');
+  // esbuild bundles react-dom/server.browser into lib/client.js, so static
+  // rendering stays available even though DSH 0.2.1 no longer seeds that
+  // specifier for plugins.
   const {renderToStaticMarkup}=require('react-dom/server.browser');
   function render(element) { const template=document.createElement('template');template.innerHTML=renderToStaticMarkup(element);return template.content; }
   // Resolve the image-alt class from this exact Host renderer rather than
@@ -168,7 +170,11 @@ export function createProjector(ui, react, document) {
       return {blocks,mapping:'markdown',rootClass:root.classList[0],errors:[]};
     }
     if(source.kind==='user'&&source.sourceKind==='user') {
-      const fragment=render(react.createElement('div',null,ui.projectUserText(source.raw,source.referenceLabels||[],source.skillNames||[],'skill')));
+      // DSH 0.2.1 removed projectUserText from the public primitives surface.
+      // Authored user markdown goes through the same settled text renderer the
+      // assistant body uses, so chip text (quoted paths, skill names) still
+      // appears verbatim while Markdown emphasis/link syntax is settled.
+      const fragment=render(react.createElement(ui.MarkdownText,{text:source.raw,labels,variant:'body'}));
       return {blocks:collectProjectedBlocks(fragment).map((b,index)=>({text:b.text,index,...(b.imageDescription?{imageDescription:true}:{})})),mapping:'user',errors:[]};
     }
     // Unknown custom cards may transform or suppress stored fields. Never
